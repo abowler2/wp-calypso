@@ -19,7 +19,7 @@ import {
 import { useFormStatus } from '../form-status';
 import { PaymentMethodLogos } from '../styled-components/payment-method-logos';
 
-export function createPayPalMethod( { registerStore, makePayPalExpressRequest } ) {
+export function createPayPalMethod( { registerStore, makePayPalExpressRequest, getSiteId } ) {
 	registerStore( 'paypal', {
 		controls: {
 			PAYPAL_TRANSACTION_SUBMIT( action ) {
@@ -32,7 +32,7 @@ export function createPayPalMethod( { registerStore, makePayPalExpressRequest } 
 					domainDetails,
 					postalCode,
 				} = action.payload;
-				const siteId = ''; // TODO: get site id
+				const siteId = getSiteId();
 				const couponId = null; // TODO: get couponId
 				const dataForApi = {
 					successUrl,
