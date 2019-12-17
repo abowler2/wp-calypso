@@ -5,7 +5,7 @@ import React, { useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { CheckoutProvider } from '@automattic/composite-checkout';
 import debugFactory from 'debug';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector, useDispatch, connect } from 'react-redux';
 import { WPCheckout, useWpcomStore, useShoppingCart } from '@automattic/composite-checkout-wpcom';
 
 /**
@@ -20,6 +20,8 @@ import {
 } from 'lib/cart-values/cart-items';
 import { requestPlans } from 'state/plans/actions';
 import { getPlanBySlug } from 'state/plans/selectors';
+import { FormCountrySelect } from 'components/forms/form-country-select';
+import getCountries from 'state/selectors/get-countries';
 
 const debug = debugFactory( 'calypso:composite-checkout' );
 
@@ -27,6 +29,23 @@ const debug = debugFactory( 'calypso:composite-checkout' );
 // TODO: determine what these should be
 const successRedirectUrl = window.location.href;
 const failureRedirectUrl = window.location.href;
+
+// Wrapper component
+function CountrySelectMenu( { translate, countriesList } ) {
+    return (
+        <FormCountrySelect
+            countriesList={ countriesList }
+            translate={ translate }
+            // Once we get this working with redux the onChange prop
+            // will need to be passed in; see TaxFields
+            onChange={ foo => console.log( 'Country Changed: ' + foo ) }
+        />
+    );
+}
+
+const ConnectedCountrySelectMenu = connect( state => ( {
+    countriesList: getCountries( state, 'payments' ),
+} ) )( CountrySelectMenu );
 
 export function CompositeCheckout( {
 	siteSlug,
@@ -75,6 +94,7 @@ export function CompositeCheckout( {
 				removeItem={ removeItem }
 				changePlanLength={ changePlanLength }
 				siteId={ siteId }
+				CountrySelectMenu={ ConnectedCountrySelectMenu }
 			/>
 		</CheckoutProvider>
 	);
