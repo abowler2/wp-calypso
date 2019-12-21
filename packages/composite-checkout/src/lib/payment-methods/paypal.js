@@ -18,7 +18,6 @@ import {
 } from '../../public-api';
 import { useFormStatus } from '../form-status';
 import { PaymentMethodLogos } from '../styled-components/payment-method-logos';
-import { createCartFromLineItems } from './transactions-endpoint';
 
 export function createPayPalMethod( {
 	registerStore,
@@ -34,22 +33,18 @@ export function createPayPalMethod( {
 		controls: {
 			PAYPAL_TRANSACTION_SUBMIT( action ) {
 				const { items, successUrl, cancelUrl } = action.payload;
-				const dataForApi = {
+				return makePayPalExpressRequest( {
 					successUrl,
 					cancelUrl,
-					cart: createCartFromLineItems( {
-						siteId: getSiteId(),
-						country: getCountry(),
-						postalCode: getPostalCode(),
-						subdivisionCode: getSubdivisionCode(),
-						phoneNumber: getPhoneNumber(),
-						couponId: null, // TODO: get couponId
-						items,
-					} ),
+					siteId: getSiteId(),
+					country: getCountry(),
+					postalCode: getPostalCode(),
+					subdivisionCode: getSubdivisionCode(),
+					phoneNumber: getPhoneNumber(),
+					couponId: null, // TODO: get couponId
+					items,
 					domainDetails: getDomainDetails(),
-					'postal-code': getPostalCode(),
-				};
-				return makePayPalExpressRequest( dataForApi );
+				} );
 			},
 		},
 		actions: {
